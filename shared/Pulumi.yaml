@@ -1,0 +1,3 @@
+name: app
+runtime: nodejs
+description: Deploy shared/non-environment specific resources.

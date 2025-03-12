@@ -1,0 +1,5 @@
+config:
+  gcp:project: "infrastructure-417007"
+  gcp:region: "us-central1"
+  gcp:zone: "us-central1-b"
+encryptionsalt: v1:Zkl1UzTbZmg=:v1:mbJJ5R74L/2SQxvP:Qxpj/6hZpzt+MhZL/B3BEXpOpdKcIQ==
