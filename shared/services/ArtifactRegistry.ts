@@ -7,11 +7,19 @@ export class ArtifactRegistry extends pulumi.ComponentResource {
     constructor(name: string, projectId: pulumi.Input<string>, opts?: pulumi.ComponentResourceOptions) {
         super("custom:ArtifactRegistry", name, {}, opts);
 
-        this.repository = new gcp.artifactregistry.Repository("app-images", {
-            description: "Docker repository for foo/bar images",
+        this.repository = new gcp.artifactregistry.Repository("foo-images", {
+            description: "Docker repository for foo images",
+            format: "DOCKER",
+            location: "us-central1", // TODO: fetch from config.
+            repositoryId: "foo-images",
+            project: projectId,
+        });
+
+        this.repository = new gcp.artifactregistry.Repository("bar-images", {
+            description: "Docker repository for bar images",
             format: "DOCKER",
             location: "us-central1",
-            repositoryId: "app-images",
+            repositoryId: "bar-images",
             project: projectId,
         });
 
