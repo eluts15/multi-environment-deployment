@@ -74,7 +74,7 @@ export class CloudBuildRoles extends pulumi.ComponentResource {
         */
         new gcp.artifactregistry.RepositoryIamMember(`${name}-artifact-reader`, {
             location: "us-central1",
-            repository: "foo",
+            repository: "app-images",
             role: "roles/artifactregistry.reader",
             member: this.serviceAccount.email.apply(email => `serviceAccount:${email}`),
             project: projectId

@@ -9,13 +9,19 @@ export interface RepoConfig {
 export const repos: RepoConfig[] = [
     {
         owner: "eluts15",
-        name: "deployments",
+        name: "components",
         buildPath: "cloudbuild.yaml", // default
         branchName: "main"
     },
     {
         owner: "eluts15",
         name: "foo",
+        buildPath: "cloudbuild.yaml",
+        branchName: "^(develop|experimental/.+)$"
+    },
+    {
+        owner: "eluts15",
+        name: "bar",
         buildPath: "cloudbuild.yaml",
         branchName: "^(develop|experimental/.+)$"
     },

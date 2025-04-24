@@ -93,10 +93,10 @@ const appDevTrigger = cloudbuild.appBuildDevTrigger(repos[1]);
 
 // builds from a "deployments" repo that consists of submodules (our "app" in this case).
 // when we `push` to the `main` branch, updating the submodule reference; we trigger a deployment to QA.
-//const deploymentQATrigger = cloudbuild.deploymentsQATrigger(repos[0]);
+const deploymentQATrigger = cloudbuild.deploymentsQATrigger(repos[0]);
 
 // when we `push` a new tag that meets our regex requirements, we are trigging a deployment to prod.
-// const deploymentProdTrigger = cloudbuild.deploymentsProdTrigger(repos[0]);
+const deploymentProdTrigger = cloudbuild.deploymentsProdTrigger(repos[0]);
 
 
 /*

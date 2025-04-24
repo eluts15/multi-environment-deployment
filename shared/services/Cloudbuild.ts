@@ -67,7 +67,7 @@ export class Cloudbuild extends pulumi.ComponentResource {
     */
     deploymentsQATrigger(repo: RepoConfig) {
         return new gcp.cloudbuild.Trigger(`${repo.name}-qa`, {
-            description: `Deploys from our monorepo: ${repo.name} to QA from push event.`, 
+            description: `Deploys from our monorepo: ${repo.name} to QA from push event on main branch.`, 
             name: `${repo.name}-qa`,
             project: this.projectId,
             filename: "qa.yaml", // here, I'm overriding the default cloudbuild.yaml
