@@ -23,6 +23,7 @@ export class CloudBuildRoles extends pulumi.ComponentResource {
             dependsOn: this.serviceAccount
         });
 
+        // Allow cloudbuild to push new built images to our artifact registry
         new gcp.projects.IAMMember(`${name}-artifact-registry-writer`, {
             member: this.serviceAccount.email.apply(email => `serviceAccount:${email}`),
             role: "roles/artifactregistry.writer",
@@ -58,22 +59,22 @@ export class CloudBuildRoles extends pulumi.ComponentResource {
         });
 
         // Grant the Cloudbuild resources the ability to fetch images from artifact registry.
-        new gcp.projects.IAMMember(`${name}-artifact-registry-reader`, {
-            member: this.serviceAccount.email.apply(email => `serviceAccount:${email}`),
-            role: "roles/artifactregistry.reader",
-            project: projectId,
-        }, {
-            parent: this,
-            deleteBeforeReplace: true,
-            dependsOn: this.serviceAccount
-        });
+        //new gcp.projects.IAMMember(`${name}-artifact-registry-reader`, {
+        //    member: this.serviceAccount.email.apply(email => `serviceAccount:${email}`),
+        //    role: "roles/artifactregistry.reader",
+        //    project: projectId,
+        //}, {
+        //    parent: this,
+        //    deleteBeforeReplace: true,
+        //    dependsOn: this.serviceAccount
+        //});
 
         /* Alternatively. grant Cloudbuild resources ability to fetch images from a `specific` registry instead.
-        In this case, a repository named `my-app-images
+        In this case, a repository named `foo`
         */
         new gcp.artifactregistry.RepositoryIamMember(`${name}-artifact-reader`, {
             location: "us-central1",
-            repository: "my-app-images",
+            repository: "foo",
             role: "roles/artifactregistry.reader",
             member: this.serviceAccount.email.apply(email => `serviceAccount:${email}`),
             project: projectId

@@ -15,7 +15,7 @@ export const repos: RepoConfig[] = [
     },
     {
         owner: "eluts15",
-        name: "my-app",
+        name: "foo",
         buildPath: "cloudbuild.yaml",
         branchName: "^(develop|experimental/.+)$"
     },

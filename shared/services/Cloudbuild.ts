@@ -41,9 +41,9 @@ export class Cloudbuild extends pulumi.ComponentResource {
     A deployment to dev happens when a branch is merged and pushed to a branch that matches our specified regex.
     */
     appBuildDevTrigger(repo: RepoConfig) {
-        return new gcp.cloudbuild.Trigger(`${repo.name}-app-builder-dev`, {
+        return new gcp.cloudbuild.Trigger(`${repo.name}-builder-dev`, {
             description: "Builds and deploys the app when new commits are pushed to branch: develop.",
-            name: `${repo.name}-app-dev`,
+            name: `${repo.name}-dev`,
             project: this.projectId,
             filename: repo.buildPath,
             github: {

@@ -10,7 +10,7 @@ export class CloudRunRoles extends pulumi.ComponentResource {
         // Create a Cloud Run service account
         this.serviceAccount = new gcp.serviceaccount.Account(`${name}-service-account`, {
             accountId: "cloudrun-svc-acc", // 30 character is the max
-            displayName: "CloudRun Service Account my-app",
+            displayName: "CloudRun Service Account to deploy `foo`",
             project: projectId,
         }, { parent: this });
 

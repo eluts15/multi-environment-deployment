@@ -44,3 +44,7 @@ cd environments && ./init.sh
 pulumi stack select dev
 pulumi up
 ```
+
+```
+pulumi-statefiles-deployments-30107ec0
+```

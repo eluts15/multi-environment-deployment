@@ -11,6 +11,9 @@ import { repos } from "./repo-config";
 
 const gcpConfig = new pulumi.Config("gcp");
 const projectId = gcpConfig.require("project");
+const billingProject = gcpConfig.require("billingProject");
+console.log("Using projectId: ", projectId);
+console.log("Using billingProject: ", billingProject);
 
 /* Our GCP Provider
 If this was more than an example, we'd pass these more securely;
@@ -18,8 +21,8 @@ For this for demonstration it's fine.
 */
 new gcp.Provider("gcp", {
     project: projectId,
-    billingProject: "infrastructure",  // Explicitly set billing project
-    userProjectOverride: true                 // Enable billing project override
+    billingProject: billingProject,
+    userProjectOverride: true
 });
 
 // Enable the Google APIs we require.
@@ -28,7 +31,7 @@ function enableServices(projectId: string, services: string[]) {
         new gcp.projects.Service(`${service}`, {
             project: projectId,
             service: service,
-            disableOnDestroy: false,
+            disableOnDestroy: true,
         })
     );
 }
@@ -36,32 +39,46 @@ function enableServices(projectId: string, services: string[]) {
 const requiredApis = [
     "cloudbuild.googleapis.com",            // Cloud Build API
     "artifactregistry.googleapis.com",      // Artifact Registry API
-    "cloudresourcemanager.googleapis.com",  // Resource Manager API
     "iam.googleapis.com",                   // IAM API
-    //"container.googleapis.com",           // Google Kubernetes Enging API
+    "run.googleapis.com",                   // Cloud Run API
+    "secretmanager.googleapis.com",         // Secret Manager API
+   // "container.googleapis.com",           // Google Kubernetes Enging API
+   // "cloudresourcemanager.googleapis.com",  // Resource Manager API
     // Add other APIs here as necessary.
 
 ];
-enableServices(projectId, requiredApis);
+
+const enabledApis = enableServices(projectId, requiredApis);
+
+// TODO: Might need some small `wait` period here to ensure that the APIs are enabled before continuing.
 
 // Shared Secret Resources -- secrets that are shared between environments
 new SecretManager(`shared-secrets`, {
     projectId: projectId,
     envFilePath: "./.env.shared",
+}, {
+    dependsOn: enabledApis
 });
 
 // Set up our artifact registry to store Docker images that are built when our various ci/cd pipelines complete successfully.
-const artifactRegistry = new ArtifactRegistry("artifact-registry", projectId);
+const artifactRegistry = new ArtifactRegistry("artifact-registry", projectId, {
+    dependsOn: enabledApis
+});
 
 // Setup roles/permissions for the GCP services that we want to use.
-const cloudBuildRoles = new CloudBuildRoles("cloudbuild-permission-set", projectId);
-const cloudRunRoles = new CloudRunRoles("cloudrun-permissions-set", projectId);
+ const cloudBuildRoles = new CloudBuildRoles("cloudbuild-permission-set", projectId, {
+     dependsOn: enabledApis
+ });
 
-const cloudbuild = new Cloudbuild("cloudbuild-resources", {
-    projectId: projectId,
-    cloudbuildServiceAccountId: cloudBuildRoles.serviceAccount.id,
-    cloudbuildServiceAccountEmail: cloudBuildRoles.serviceAccount.email,
-});
+ const cloudRunRoles = new CloudRunRoles("cloudrun-permissions-set", projectId, {
+     dependsOn: enabledApis
+ });
+
+ const cloudbuild = new Cloudbuild("cloudbuild-resources", {
+     projectId: projectId,
+     cloudbuildServiceAccountId: cloudBuildRoles.serviceAccount.id,
+     cloudbuildServiceAccountEmail: cloudBuildRoles.serviceAccount.email,
+ });
 
 
 /*
@@ -99,4 +116,4 @@ export const artifactRegistryRepositoryName = artifactRegistry.repository.name;
 // cloudbuild triggers 
 export const appDevTriggerId = appDevTrigger.id;
 //export const deploymentQATriggerId = deploymentQATrigger.id;
-// export const deploymentProdTriggerId = deploymentProdTrigger.id;
+//export const deploymentProdTriggerId = deploymentProdTrigger.id;
